@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📝게시글 작성 페이지</title>
+</head>
+<body>
+  <h1>📝게시글 작성</h1>
+  <form action="/write" method="post">
+    <span>이름 : </span>
+    <input type="text" name="name" placeholder="이름을 입력하세요.">
+    <span>내용 : </span>
+    <input type="text" name="content" placeholder="내용을 입력하세요.">
+    <button type="submit">작성</button>
+    <button type="reset">초기화</button>
+    <button type="button" onclick="location.href = '/list'">취소</button>
+  </form>
+</body>
+</html>

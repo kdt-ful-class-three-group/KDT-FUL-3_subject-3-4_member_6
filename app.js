@@ -7,6 +7,10 @@ import posts from './src/storage/postsData.js';
 import CONTENT_TYPE from './src/constants/contentTypeConstants.js';
 // JSON 파일 불러오는 로직 불러오기
 import loadFromJSON from './src/functions/loadFromJson.js';
+// POST 데이터 파싱을 위한 querystring 모듈 불러오기
+import qs from 'querystring';
+// JSON 파일에 저장하는 로직 불러오기
+import saveToJSON from './src/functions/saveToJson.js';
 
 // * 서버 생성하기
 const server = http.createServer(function(request, response) {
@@ -39,7 +43,7 @@ const server = http.createServer(function(request, response) {
       
     // ! 잘못 접근했다면 404 에러 페이지 표기하기
     } else {
-      response.writeHead(400, CONTENT_TYPE.HTML); // 잘못 접근하였을 경우
+      response.writeHead(404, CONTENT_TYPE.HTML); // 잘못 접근하였을 경우
       response.end(errorPage); // 페이지에 Not found 표기하기
     }
   }
@@ -47,10 +51,42 @@ const server = http.createServer(function(request, response) {
   if (methodUrl === "POST") {
     // ? 글 작성 write 페이지라면
     if (pathName === "/write") {
-      
+      let body = ""; // 요청 데이터를 문자열로 정리하기 위한 임시 변수
+      // * 요청 데이터를 불러와 임시 변수 body에 저장하기
+      request.on("data", function (chunk) {
+        body = body + chunk;
+      });
+      // * 쿼리스트링을 이용해 새롭게 작성한 게시글 내용을 파싱해 데이터에 저장하기
+      request.on("end", function () {
+        const postData = qs.parse(body);
+        loadFromJSON(function (error, posts) {
+          if (error === true) {
+            response.writeHead(500, CONTENT_TYPE.HTML);
+            response.end(errorPage);
+          } else {
+            // 새로운 게시글에 대한 정보를 newPost 변수에 객체로 추가
+            const newPost = {
+              id: posts.length + 1,
+              name: postData.name,
+              content: postData.content
+            };
+            posts.push(newPost); // 원본 배열인 게시글들 목록에 새로운 게시글 내용 추가
+            // * 새로운 게시글을 JSON 파일에도 추가하기
+            saveToJSON(posts, function (saveError) {
+              if (saveError === true) {
+                response.writeHead(500, CONTENT_TYPE.HTML);
+                response.end(errorPage);
+              } else {
+                response.writeHead(302, { location: "/list" });
+                response.end();
+              }
+            })
+          }
+        })
+      })
     // ! 잘못 접근했다면 404 에러 페이지 표기하기
     } else {
-      response.writeHead(400, CONTENT_TYPE.HTML); // 잘못 접근하였을 경우
+      response.writeHead(404, CONTENT_TYPE.HTML); // 잘못 접근하였을 경우
       response.end(errorPage); // 페이지에 Not found 표기하기
     }
   }

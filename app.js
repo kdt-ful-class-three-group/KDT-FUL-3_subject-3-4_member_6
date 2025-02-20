@@ -20,19 +20,19 @@ const server = http.createServer(function(request, response) {
     if (pathName === "/") {
       const indexPage = fs.readFileSync('./views/index.html', 'utf-8'); // index 페이지 읽어오기
       response.writeHead(200, CONTENT_TYPE.HTML);
-      // TODO. posts 파일을 가져와 index.html에 정보를 뿌릴 수 있게 조사하기
-      loadFromJSON(function (error, posts) {
-        if (error === true) {
-          response.end(errorPage);
-        } else {
-          response.end(indexPage);
-        }
-      });
+      response.end(indexPage);
     // ? 글 목록 list 페이지라면
     } else if (pathName === "/list") {
       const listPage = fs.readFileSync('./views/list.html', 'utf-8'); // list 페이지 읽어오기
       response.writeHead(200, CONTENT_TYPE.HTML);
-      response.end(listPage);
+      // TODO. posts 파일을 가져와 list.html에 정보를 뿌릴 수 있게 조사하기
+      loadFromJSON(function (error, posts) {
+        if (error === true) {
+          response.end(errorPage);
+        } else {
+          response.end(listPage);
+        }
+      });
     // ? 글 상세 페이지라면
     // TODO. 상세 페이지이기 때문에 뒤에 게시글id를 가지고 와야 보여줄 수 있다. ex: /post/{id}
     } else if (pathName === "/post") {

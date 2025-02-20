@@ -48,6 +48,10 @@ const server = http.createServer(function(request, response) {
       const writePage = fs.readFileSync('./views/write.html', 'utf-8'); // write 페이지 읽어오기
       response.writeHead(200, CONTENT_TYPE.HTML);
       response.end(writePage);
+    } else if (pathName === "/public/css/common.css") {
+      const cssPage = fs.readFileSync('public/css/common.css'); // css 페이지 읽어오기
+      response.writeHead(200, CONTENT_TYPE.CSS);
+      response.end(cssPage);
     // ! 잘못 접근했다면 404 에러 페이지 표기하기
     } else {
       response.writeHead(404, CONTENT_TYPE.HTML); // 잘못 접근하였을 경우

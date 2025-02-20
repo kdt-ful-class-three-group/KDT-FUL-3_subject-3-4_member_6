@@ -20,6 +20,13 @@ const server = http.createServer(function(request, response) {
       
     }
   }
+  // * POST 요청 처리하기
+  if (methodUrl === "POST") {
+    // ? 글 작성 write 페이지라면
+    if (pathName === "/write") {
+      
+    }
+  }
 });
 
 // dotenv 패키지 불러오기

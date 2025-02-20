@@ -1,0 +1,20 @@
+{
+  "name": "kdt-ful-3_subject-3-4_member_6",
+  "version": "0.0.1",
+  "description": "",
+  "homepage": "https://github.com/kdt-ful-class-three-group/KDT-FUL-3_subject-3-4_member_6#readme",
+  "bugs": {
+    "url": "https://github.com/kdt-ful-class-three-group/KDT-FUL-3_subject-3-4_member_6/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kdt-ful-class-three-group/KDT-FUL-3_subject-3-4_member_6.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}

@@ -41,6 +41,11 @@ const server = http.createServer(function(request, response) {
     // TODO. 상세 페이지이기 때문에 뒤에 게시글id를 가지고 와야 보여줄 수 있다. ex: /post/{id}
     } else if (pathName === "/post") {
       
+    // ? 글 작성 페이지라면
+    } else if (pathName === "/write") {
+      const writePage = fs.readFileSync('./views/write.html', 'utf-8'); // write 페이지 읽어오기
+      response.writeHead(200, CONTENT_TYPE.HTML);
+      response.end(writePage);
     // ! 잘못 접근했다면 404 에러 페이지 표기하기
     } else {
       response.writeHead(404, CONTENT_TYPE.HTML); // 잘못 접근하였을 경우

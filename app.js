@@ -3,6 +3,8 @@ import http from 'http';
 import fs from 'fs';
 // 환경변수 env 활용하기 위한 라이브러리 불러오기
 import dotenv from 'dotenv';
+// 게시글 데이터 불러오기
+import posts from './src/storage/postsData.js';
 
 // * 서버 생성하기
 const server = http.createServer(function(request, response) {

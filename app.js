@@ -40,7 +40,9 @@ const server = http.createServer(function(request, response) {
     // ? 글 상세 페이지라면
     // TODO. 상세 페이지이기 때문에 뒤에 게시글id를 가지고 와야 보여줄 수 있다. ex: /post/{id}
     } else if (pathName === "/post") {
-      
+      const postPage = fs.readFileSync('./views/post.html', 'utf-8'); // post(상세보기) 페이지 읽어오기
+      response.writeHead(200, CONTENT_TYPE.HTML);
+      response.end(postPage);
     // ? 글 작성 페이지라면
     } else if (pathName === "/write") {
       const writePage = fs.readFileSync('./views/write.html', 'utf-8'); // write 페이지 읽어오기

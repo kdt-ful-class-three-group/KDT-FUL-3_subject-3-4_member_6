@@ -1,0 +1,58 @@
+/* * 전체 레이아웃 설정 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html, body {
+  width: 100%;
+  height: 100%;
+}
+body {
+  padding: 5vh;
+}
+
+/* *css 유틸리티 클래스 정의하기 */
+.display-flex { display: flex; }
+.display-none { display: none; }
+
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-end { justify-content: flex-end; }
+.align-center { align-items: center; }
+.align-end { align-items: flex-end; }
+.flex-column { flex-direction: column; }
+
+.mb-07 { margin-bottom: 0.7rem; }
+.mt-05 { margin-top: 0.5rem; }
+.mt-07 { margin-top: 0.7rem; }
+.pd-1 { padding: 1vh; }
+.pd-left-15px { padding-left: 15px; }
+.pd-04-1 { padding: 0.4vh 1vh; }
+.pd-09 { padding: 0.9vh; }
+.gap-05 { gap: 0.5rem; }
+.gap-07 { gap: 0.7rem; }
+
+.text-center { text-align: center; }
+.text-line-none { text-decoration-line: none; }
+.font-small { font-size: small; }
+.list-none { list-style: none; }
+.cursor-pointer { cursor: pointer; }
+
+.bd-none { border: none; }
+.bd-radius-1 { border-radius: 1rem; }
+
+.bg-yellow-100 { background-color: #ffde77; }
+.bg-yellow-200 { background-color: #fdd318; }
+.bg-orange-100 { background-color: #ffae00; }
+.bg-gray-100 {background-color: #cccccc; }
+.bg-beige { background-color: beige; }
+.bg-black-100 { background-color: #504f4f; }
+.bg-black-200 { background-color: #272727; }
+.bg-black-300 { background-color: #0c0c0c; }
+.bg-red-100 { background-color: #fa7373; }
+
+.color-blackgray { color: #302f2f; }
+.color-white { color:white; }
+.color-black { color:black; }
+.color-red { color: #e71010; }

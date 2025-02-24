@@ -4,24 +4,22 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="../public/css/common.css">
-  <title>📄게시글 상세보기 페이지</title>
+  <title>📝게시글 작성 페이지</title>
 </head>
 <body>
   <header class="display-flex justify-center">
-    <h1>📄게시글 상세보기</h1>
+    <h1>📝게시글 작성</h1>
   </header>
   <article class="display-flex justify-center">
-    <form action="/post/{id}" method="post">
-      <!-- TODO. 아래에 이름과 내용값 가져오는 로직 구현 후 수정하기 -->
+    <form action="/write" method="post">
       <span>이름 : </span>
-      <input type="text" name="name" value="" placeholder="이름을 입력하세요.">
-      <br>
+      <input type="text" name="name" placeholder="이름을 입력하세요.">
       <span>내용 : </span>
-      <input type="text" name="content" value="" placeholder="내용을 입력하세요.">
-      <br>
+      <input type="text" name="content" placeholder="내용을 입력하세요.">
       <div id="btn-set" class="text-center pd-1">
-        <button type="submit">수정하기</button>
-        <button type="button" onclick="location.href = '/list'">뒤로가기</button>
+        <button type="submit">작성</button>
+        <button type="reset">초기화</button>
+        <button type="button" onclick="location.href = '/list'">취소</button>
       </div>
     </form>
   </article>

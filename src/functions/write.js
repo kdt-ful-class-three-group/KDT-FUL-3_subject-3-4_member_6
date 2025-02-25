@@ -1,5 +1,5 @@
 // * 포스트 작성 페이지 가져오는 함수
-function writePost() {
+function writePost(dataCheckMsg) {
   let htmlPage = `
   <!DOCTYPE html>
 <html lang="en">
@@ -19,6 +19,7 @@ function writePost() {
       <input type="text" name="name" placeholder="이름을 입력하세요.">
       <span>내용 : </span>
       <input type="text" name="content" placeholder="내용을 입력하세요.">
+      <p class="color-red">${dataCheckMsg}</p>
       <div id="btn-set" class="text-center pd-1">
         <button type="submit">작성</button>
         <button type="reset">초기화</button>

@@ -3,7 +3,7 @@ import fs from 'fs';
 // 경로제어를 위해 path 모듈 불러오기
 import path from 'path';
 // JSON 파일로 저장시키는 로직 불러오기
-import saveToJSON from '../functions/saveToJson.js';
+import saveToJSON from './saveToJson.js';
 // 게시글 데이터 불러오기
 import posts from '../storage/postsData.js';
 

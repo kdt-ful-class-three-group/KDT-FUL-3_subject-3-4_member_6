@@ -111,13 +111,41 @@ const server = http.createServer(function(request, response) {
               }
             })
           }
-        })
+        });
       })
+    // ? 글 수정을 눌렀다면
     } else if (request.url === `/post?${parsedUrl[1]}`) {
       let body = ""; // 요청 데이터를 문자열로 정리하기 위한 임시 변수
       // * 요청 데이터를 불러와 임시 변수 body에 저장하기
       request.on("data", function (chunk) {
         body = body + chunk;
+      });
+      request.on("end", function () {
+        const updateData = qs.parse(body);
+        loadFromJSON(function (error, posts) {
+          if (error === true) {
+            response.writeHead(500, CONTENT_TYPE.HTML);
+            response.end(errorPage);
+          } else {
+            // 수정할 정보를 updatePost 변수에 객체로 추가
+            const updatePost = {
+              id: Number(updateData.id),
+              name: updateData.name,
+              content: updateData.content
+            };
+            posts.splice(updatePost.id - 1, 1, updatePost) // 원본 배열인 게시글들 목록에 수정할 게시글 넣기
+            // * 수정된 게시글 배열을 JSON 파일에도 수정하기
+            saveToJSON(posts, function (saveError) {
+              if (saveError === true) {
+                response.writeHead(500, CONTENT_TYPE.HTML);
+                response.end(errorPage);
+              } else {
+                response.writeHead(302, { location: "/list" });
+                response.end();
+              }
+            })
+          }
+        });
       });
     // ! 잘못 접근했다면 404 에러 페이지 표기하기
     } else {

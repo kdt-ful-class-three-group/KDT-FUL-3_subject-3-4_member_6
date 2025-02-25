@@ -1,4 +1,4 @@
-// * 포스트 리스트 가져오는 함수
+// * 포스트 작성 페이지 가져오는 함수
 function writePost() {
   let htmlPage = `
   <!DOCTYPE html>

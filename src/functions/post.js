@@ -17,6 +17,7 @@ function selectPosts(data, parsedUrl) {
   </header>
   <article class="display-flex justify-center">
     <form action="/post?id=${inputId}" method="post">
+      <input type="hidden" name="id" value="${selectedPost.id}">
       <span>이름 : </span>
       <input type="text" name="name" value="${selectedPost.name}" placeholder="이름을 입력하세요.">
       <br>

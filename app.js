@@ -4,15 +4,17 @@ import fs from 'fs';
 // content-type 상수 데이터 불러오기
 import CONTENT_TYPE from './src/constants/contentTypeConstants.js';
 // JSON 파일 불러오는 로직 불러오기
-import loadFromJSON from './src/functions/loadFromJson.js';
+import loadFromJSON from './src/utils/loadFromJson.js';
 // POST 데이터 파싱을 위한 querystring 모듈 불러오기
 import qs from 'querystring';
 // JSON 파일에 저장하는 로직 불러오기
-import saveToJSON from './src/functions/saveToJson.js';
-// 모듈 JS 파일들 불러오기
+import saveToJSON from './src/utils/saveToJson.js';
+// 화면을 보이게 해주는 모듈 JS 파일들 불러오기
 import listPosts from './src/functions/list.js';
 import selectPosts from './src/functions/post.js';
 import writePost from './src/functions/write.js';
+// 데이터 유효성 검사하는 로직 불러오기
+import dataCheck from './src/utils/dataCheck.js';
 
 // * 서버 생성하기
 const server = http.createServer(function(request, response) {
@@ -40,18 +42,20 @@ const server = http.createServer(function(request, response) {
       });
     // ? 글 상세 페이지라면
     } else if (pathName === "/post") {
+      let blankMsg = "";
       response.writeHead(200, CONTENT_TYPE.HTML);
       loadFromJSON(function (error, posts) {
         if (error === true) {
           response.end(errorPage);
         } else {
-          let postPage = selectPosts(posts, parsedUrl[1]); // post(상세보기) 페이지 읽어오기
+          let postPage = selectPosts(posts, parsedUrl[1], blankMsg); // post(상세보기) 페이지 읽어오기
           response.end(postPage);
         }
       });
     // ? 글 작성 페이지라면
     } else if (pathName === "/write") {
-      let writePage = writePost();
+      let blankMsg = "";
+      let writePage = writePost(blankMsg);
       response.writeHead(200, CONTENT_TYPE.HTML);
       response.end(writePage);
     // ? common.css 불러오기
@@ -84,13 +88,26 @@ const server = http.createServer(function(request, response) {
             response.end(errorPage);
           // ? 새로운 포스트 Create 하기
           } else {
+            /**
+             * TODO. 2025-02-25 <데이터 로직 변경>
+             * TODO. 삭제 기능 추가로 인해 id 를 posts.length + 1 이 아닌, posts의 맨 마지막 데이터 id에 +1 을 하는 로직으로 변경해야 함!
+             */
             // 새로운 게시글에 대한 정보를 newPost 변수에 객체로 추가
             const newPost = {
-              id: posts.length + 1,
+              id: posts[posts.length - 1].id + 1,
               name: postData.name,
               content: postData.content
             };
-            posts.push(newPost); // 원본 배열인 게시글들 목록에 새로운 게시글 내용 추가
+            // * 데이터 유효성 검사하기
+            let errorMsg = "";
+            let updateFlg = false;
+            errorMsg = dataCheck(posts, newPost, updateFlg);
+            if (errorMsg !== "") {
+              let writePage = writePost(errorMsg);
+              return response.end(writePage);
+            } else {
+              posts.push(newPost); // 원본 배열인 게시글들 목록에 새로운 게시글 내용 추가
+            }
             // * 새로운 게시글을 JSON 파일에도 추가하기
             saveToJSON(posts, function (saveError) {
               // ! 에러라면 500 서버 문제 발생 에러 페이지 표기하기
@@ -128,7 +145,25 @@ const server = http.createServer(function(request, response) {
               name: updateData.name,
               content: updateData.content
             };
-            posts.splice(updatePost.id - 1, 1, updatePost) // 원본 배열인 게시글들 목록에 수정할 게시글 넣기
+            /**
+             * TODO. 2025-02-25 <데이터 로직 변경>
+             * TODO. updatePost.id - 1 이 아닌, 해당 데이터의 index를 활용하기위해 forEach() 사용하기
+             */
+            // * 데이터 유효성 검사하기
+            let errorMsg = "";
+            let updateFlg = true; // 수정하기 부분이기 때문에 true 지정하기
+            errorMsg = dataCheck(posts, updatePost, updateFlg);
+            if (errorMsg !== "") {
+              let postPage = selectPosts(posts, parsedUrl[1], errorMsg);
+              return response.end(postPage);
+            } else {
+              posts.forEach((list, index) => {
+                if (list.id == updatePost.id) {
+                  posts.splice(index, 1, updatePost); // 원본 배열인 게시글들 목록에 수정할 게시글 넣기
+                  return;
+                }
+              });
+            }
             // * 수정된 게시글 배열을 JSON 파일에도 수정하기
             saveToJSON(posts, function (saveError) {
               // ! 에러라면 500 서버 문제 발생 에러 페이지 표기하기
@@ -160,11 +195,14 @@ const server = http.createServer(function(request, response) {
             response.end(errorPage);
           // ? 삭제할 포스트를 Delete 하기
           } else {
-            // 삭제할 정보의 인덱스를 deleteIndex 변수에 담기
-            const deleteIndex = Number(deleteData.id) - 1;
-            posts.splice(deleteIndex, 1) // 원본 배열인 게시글들 목록에서 해당된 게시글 삭제
-            // * 수정된 게시글 배열을 JSON 파일에도 수정하기
-            saveToJSON(posts, function (saveError) {
+            /**
+             * TODO. 2025-02-25 <데이터 로직 변경>
+             * TODO. deleteIndex 방법 말고 위에서 가져온 삭제할 포스트 정보를 이용해 filter()로 삭제시키기
+             */
+            // * 원본배열의 값이 '삭제할 데이터'가 아닌 경우에만 해당 데이터들을 가지고 새로운 배열을 만듦
+            let filterdPosts = posts.filter((data) => data.id != deleteData.id);
+            // * 데이터 삭제 후 수정된 게시글 배열을 JSON 파일에도 수정하기
+            saveToJSON(filterdPosts, function (saveError) {
               // ! 에러라면 500 서버 문제 발생 에러 페이지 표기하기
               if (saveError === true) {
                 response.writeHead(500, CONTENT_TYPE.HTML);

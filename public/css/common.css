@@ -20,8 +20,10 @@ body {
 .justify-between { justify-content: space-between; }
 .justify-end { justify-content: flex-end; }
 .align-center { align-items: center; }
+.align-start { align-content: flex-start; }
 .align-end { align-items: flex-end; }
 .flex-column { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
 
 .mb-07 { margin-bottom: 0.7rem; }
 .mt-05 { margin-top: 0.5rem; }
@@ -38,6 +40,7 @@ body {
 .font-small { font-size: small; }
 .list-none { list-style: none; }
 .cursor-pointer { cursor: pointer; }
+.overflow-auto { overflow: auto; }
 
 .bd-none { border: none; }
 .bd-radius-1 { border-radius: 1rem; }

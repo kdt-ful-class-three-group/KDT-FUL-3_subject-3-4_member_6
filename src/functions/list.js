@@ -1,9 +1,10 @@
 // * 포스트 리스트 가져오는 함수
 function listPosts(data) {
-  let html = ``;
+  let html = `<ul class="display-flex align-start flex-column flex-wrap overflow-auto">`;
   data.forEach(element => {
-    html += `<li><a href="/post?id=${element.id}">${element.name} ${element.content}</a></li>`;
+    html += `<li><a href="/post?id=${element.id}">✏️${element.name} : ${element.content}</a></li>`;
   });
+  html += `</ul>`
   let htmlPage = `
   <!DOCTYPE html>
 <html lang="en">

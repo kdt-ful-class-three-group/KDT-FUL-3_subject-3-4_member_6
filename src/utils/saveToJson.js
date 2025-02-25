@@ -15,7 +15,6 @@ function saveToJSON(data, callback) {
   // ? -> 만약 어떤 인자도 전달하지 않는다면 현재 working directory 를 반환
   // ? ex: 현재 파일의 경우에는 'D:\ahn\KDT-FUL-3_subject-3-4_member_6' 를 반환
   const __dirname = path.resolve();
-  console.log(__dirname);
 
   // TODO. path.join([...paths]) : 인자를 넣으면 하나의 경로를 합쳐 반환
   const filePath = path.join(__dirname, "posts.json");

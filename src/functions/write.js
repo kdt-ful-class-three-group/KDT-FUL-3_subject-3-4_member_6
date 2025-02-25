@@ -1,4 +1,7 @@
-<!DOCTYPE html>
+// * 포스트 작성 페이지 가져오는 함수
+function writePost() {
+  let htmlPage = `
+  <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -27,4 +30,8 @@
     <span>ⓒ made by eunbyul.ahn</span>
   </footer>
 </body>
-</html>
+</html>`;
+  return htmlPage;
+}
+
+export default writePost;

@@ -1,8 +1,6 @@
 import http from 'http';
 // 파일 시스템 활용을 위한 라이브러리 불러오기
 import fs from 'fs';
-// 게시글 데이터 불러오기
-import posts from './src/storage/postsData.js';
 // content-type 상수 데이터 불러오기
 import CONTENT_TYPE from './src/constants/contentTypeConstants.js';
 // JSON 파일 불러오는 로직 불러오기
@@ -11,6 +9,10 @@ import loadFromJSON from './src/functions/loadFromJson.js';
 import qs from 'querystring';
 // JSON 파일에 저장하는 로직 불러오기
 import saveToJSON from './src/functions/saveToJson.js';
+// 모듈 JS 파일들 불러오기
+import listPosts from './src/functions/list.js';
+import selectPosts from './src/functions/post.js';
+import writePost from './src/functions/write.js';
 
 // * 서버 생성하기
 const server = http.createServer(function(request, response) {
@@ -27,27 +29,32 @@ const server = http.createServer(function(request, response) {
       response.end(indexPage);
     // ? 글 목록 list 페이지라면
     } else if (pathName === "/list") {
-      const listPage = fs.readFileSync('./views/list.html', 'utf-8'); // list 페이지 읽어오기
       response.writeHead(200, CONTENT_TYPE.HTML);
-      // TODO. posts 파일을 가져와 list.html에 정보를 뿌릴 수 있게 조사하기
       loadFromJSON(function (error, posts) {
         if (error === true) {
           response.end(errorPage);
         } else {
+          let listPage = listPosts(posts); // list 페이지 읽어오기
           response.end(listPage);
         }
       });
     // ? 글 상세 페이지라면
-    // TODO. 상세 페이지이기 때문에 뒤에 게시글id를 가지고 와야 보여줄 수 있다. ex: /post/{id}
     } else if (pathName === "/post") {
-      const postPage = fs.readFileSync('./views/post.html', 'utf-8'); // post(상세보기) 페이지 읽어오기
       response.writeHead(200, CONTENT_TYPE.HTML);
-      response.end(postPage);
+      loadFromJSON(function (error, posts) {
+        if (error === true) {
+          response.end(errorPage);
+        } else {
+          let postPage = selectPosts(posts, parsedUrl[1]); // post(상세보기) 페이지 읽어오기
+          response.end(postPage);
+        }
+      });
     // ? 글 작성 페이지라면
     } else if (pathName === "/write") {
-      const writePage = fs.readFileSync('./views/write.html', 'utf-8'); // write 페이지 읽어오기
+      let writePage = writePost();
       response.writeHead(200, CONTENT_TYPE.HTML);
       response.end(writePage);
+    // ? common.css 불러오기
     } else if (pathName === "/public/css/common.css") {
       const cssPage = fs.readFileSync('public/css/common.css'); // css 페이지 읽어오기
       response.writeHead(200, CONTENT_TYPE.CSS);
@@ -71,9 +78,11 @@ const server = http.createServer(function(request, response) {
       request.on("end", function () {
         const postData = qs.parse(body);
         loadFromJSON(function (error, posts) {
+          // ! 에러라면 500 서버 문제 발생 에러 페이지 표기하기
           if (error === true) {
             response.writeHead(500, CONTENT_TYPE.HTML);
             response.end(errorPage);
+          // ? 새로운 포스트 Create 하기
           } else {
             // 새로운 게시글에 대한 정보를 newPost 변수에 객체로 추가
             const newPost = {
@@ -84,18 +93,92 @@ const server = http.createServer(function(request, response) {
             posts.push(newPost); // 원본 배열인 게시글들 목록에 새로운 게시글 내용 추가
             // * 새로운 게시글을 JSON 파일에도 추가하기
             saveToJSON(posts, function (saveError) {
+              // ! 에러라면 500 서버 문제 발생 에러 페이지 표기하기
               if (saveError === true) {
                 response.writeHead(500, CONTENT_TYPE.HTML);
                 response.end(errorPage);
+              // ? 문제없이 JSON 파일이 만들어졌다면 /list 로 페이지 이동하기
               } else {
                 response.writeHead(302, { location: "/list" });
                 response.end();
               }
             })
           }
-        })
+        });
       })
-    // ! 잘못 접근했다면 404 에러 페이지 표기하기
+    // ? 글 수정을 눌렀다면
+    } else if (request.url === `/post?${parsedUrl[1]}`) {
+      let body = ""; // 요청 데이터를 문자열로 정리하기 위한 임시 변수
+      // * 요청 데이터를 불러와 임시 변수 body에 저장하기
+      request.on("data", function (chunk) {
+        body = body + chunk;
+      });
+      request.on("end", function () {
+        const updateData = qs.parse(body);
+        loadFromJSON(function (error, posts) {
+          // ! 에러라면 500 서버 문제 발생 에러 페이지 표기하기
+          if (error === true) {
+            response.writeHead(500, CONTENT_TYPE.HTML);
+            response.end(errorPage);
+          // ? 수정한 포스트를 Update 하기
+          } else {
+            // 수정할 정보를 updatePost 변수에 객체로 추가
+            const updatePost = {
+              id: Number(updateData.id),
+              name: updateData.name,
+              content: updateData.content
+            };
+            posts.splice(updatePost.id - 1, 1, updatePost) // 원본 배열인 게시글들 목록에 수정할 게시글 넣기
+            // * 수정된 게시글 배열을 JSON 파일에도 수정하기
+            saveToJSON(posts, function (saveError) {
+              // ! 에러라면 500 서버 문제 발생 에러 페이지 표기하기
+              if (saveError === true) {
+                response.writeHead(500, CONTENT_TYPE.HTML);
+                response.end(errorPage);
+              // ? 문제없이 JSON 파일이 만들어졌다면 /list 로 페이지 이동하기
+              } else {
+                response.writeHead(302, { location: "/list" });
+                response.end();
+              }
+            })
+          }
+        });
+      });
+    // ? 포스트 삭제하기를 눌렀다면
+    } else if (request.url === `/delete?${parsedUrl[1]}`) {
+      let body = ""; // 요청 데이터를 문자열로 정리하기 위한 임시 변수
+      // * 요청 데이터를 불러와 임시 변수 body에 저장하기
+      request.on("data", function (chunk) {
+        body = body + chunk;
+      });
+      request.on("end", function () {
+        const deleteData = qs.parse(body);
+        loadFromJSON(function (error, posts) {
+          // ! 에러라면 500 서버 문제 발생 에러 페이지 표기하기
+          if (error === true) {
+            response.writeHead(500, CONTENT_TYPE.HTML);
+            response.end(errorPage);
+          // ? 삭제할 포스트를 Delete 하기
+          } else {
+            // 삭제할 정보의 인덱스를 deleteIndex 변수에 담기
+            const deleteIndex = Number(deleteData.id) - 1;
+            posts.splice(deleteIndex, 1) // 원본 배열인 게시글들 목록에서 해당된 게시글 삭제
+            // * 수정된 게시글 배열을 JSON 파일에도 수정하기
+            saveToJSON(posts, function (saveError) {
+              // ! 에러라면 500 서버 문제 발생 에러 페이지 표기하기
+              if (saveError === true) {
+                response.writeHead(500, CONTENT_TYPE.HTML);
+                response.end(errorPage);
+              // ? 문제없이 JSON 파일이 만들어졌다면 /list 로 페이지 이동하기
+              } else {
+                response.writeHead(302, { location: "/list" });
+                response.end();
+              }
+            })
+          }
+        });
+      });
+    // ! 잘못 접근했다면 404 에러 페이지 표기하기  
     } else {
       response.writeHead(404, CONTENT_TYPE.HTML); // 잘못 접근하였을 경우
       response.end(errorPage); // 페이지에 Not found 표기하기

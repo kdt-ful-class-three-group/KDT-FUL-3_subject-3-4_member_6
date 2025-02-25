@@ -78,9 +78,11 @@ const server = http.createServer(function(request, response) {
       request.on("end", function () {
         const postData = qs.parse(body);
         loadFromJSON(function (error, posts) {
+          // ! 에러라면 500 서버 문제 발생 에러 페이지 표기하기
           if (error === true) {
             response.writeHead(500, CONTENT_TYPE.HTML);
             response.end(errorPage);
+          // ? 새로운 포스트 Create 하기
           } else {
             // 새로운 게시글에 대한 정보를 newPost 변수에 객체로 추가
             const newPost = {
@@ -91,9 +93,11 @@ const server = http.createServer(function(request, response) {
             posts.push(newPost); // 원본 배열인 게시글들 목록에 새로운 게시글 내용 추가
             // * 새로운 게시글을 JSON 파일에도 추가하기
             saveToJSON(posts, function (saveError) {
+              // ! 에러라면 500 서버 문제 발생 에러 페이지 표기하기
               if (saveError === true) {
                 response.writeHead(500, CONTENT_TYPE.HTML);
                 response.end(errorPage);
+              // ? 문제없이 JSON 파일이 만들어졌다면 /list 로 페이지 이동하기
               } else {
                 response.writeHead(302, { location: "/list" });
                 response.end();
@@ -112,9 +116,11 @@ const server = http.createServer(function(request, response) {
       request.on("end", function () {
         const updateData = qs.parse(body);
         loadFromJSON(function (error, posts) {
+          // ! 에러라면 500 서버 문제 발생 에러 페이지 표기하기
           if (error === true) {
             response.writeHead(500, CONTENT_TYPE.HTML);
             response.end(errorPage);
+          // ? 수정한 포스트를 Update 하기
           } else {
             // 수정할 정보를 updatePost 변수에 객체로 추가
             const updatePost = {
@@ -125,9 +131,11 @@ const server = http.createServer(function(request, response) {
             posts.splice(updatePost.id - 1, 1, updatePost) // 원본 배열인 게시글들 목록에 수정할 게시글 넣기
             // * 수정된 게시글 배열을 JSON 파일에도 수정하기
             saveToJSON(posts, function (saveError) {
+              // ! 에러라면 500 서버 문제 발생 에러 페이지 표기하기
               if (saveError === true) {
                 response.writeHead(500, CONTENT_TYPE.HTML);
                 response.end(errorPage);
+              // ? 문제없이 JSON 파일이 만들어졌다면 /list 로 페이지 이동하기
               } else {
                 response.writeHead(302, { location: "/list" });
                 response.end();
@@ -146,18 +154,22 @@ const server = http.createServer(function(request, response) {
       request.on("end", function () {
         const deleteData = qs.parse(body);
         loadFromJSON(function (error, posts) {
+          // ! 에러라면 500 서버 문제 발생 에러 페이지 표기하기
           if (error === true) {
             response.writeHead(500, CONTENT_TYPE.HTML);
             response.end(errorPage);
+          // ? 삭제할 포스트를 Delete 하기
           } else {
             // 삭제할 정보의 인덱스를 deleteIndex 변수에 담기
             const deleteIndex = Number(deleteData.id) - 1;
             posts.splice(deleteIndex, 1) // 원본 배열인 게시글들 목록에서 해당된 게시글 삭제
             // * 수정된 게시글 배열을 JSON 파일에도 수정하기
             saveToJSON(posts, function (saveError) {
+              // ! 에러라면 500 서버 문제 발생 에러 페이지 표기하기
               if (saveError === true) {
                 response.writeHead(500, CONTENT_TYPE.HTML);
                 response.end(errorPage);
+              // ? 문제없이 JSON 파일이 만들어졌다면 /list 로 페이지 이동하기
               } else {
                 response.writeHead(302, { location: "/list" });
                 response.end();

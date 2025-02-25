@@ -16,7 +16,7 @@ function selectPosts(data, parsedUrl) {
     <h1>📄게시글 상세보기</h1>
   </header>
   <article class="display-flex justify-center">
-    <form action="/post?id=${inputId}" method="post">
+    <form method="post">
       <input type="hidden" name="id" value="${selectedPost.id}">
       <span>이름 : </span>
       <input type="text" name="name" value="${selectedPost.name}" placeholder="이름을 입력하세요.">
@@ -25,7 +25,8 @@ function selectPosts(data, parsedUrl) {
       <input type="text" name="content" value="${selectedPost.content}" placeholder="내용을 입력하세요.">
       <br>
       <div id="btn-set" class="text-center pd-1">
-        <button type="submit">수정하기</button>
+        <button type="submit" formaction="/post?id=${inputId}">수정하기</button>
+        <button type="submit" formaction="/delete?id=${inputId}">삭제하기</button>
         <button type="button" onclick="location.href = '/list'">뒤로가기</button>
       </div>
     </form>

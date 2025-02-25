@@ -91,10 +91,18 @@ const server = http.createServer(function(request, response) {
             /**
              * TODO. 2025-02-25 <데이터 로직 변경>
              * TODO. 삭제 기능 추가로 인해 id 를 posts.length + 1 이 아닌, posts의 맨 마지막 데이터 id에 +1 을 하는 로직으로 변경해야 함!
+             * TODO. posts가 아무것도 존재하지 않을 때 (모든 데이터를 삭제했을 경우)의 id값은 1로 고정되게 들어가는 변수가 필요
              */
+            // * posts가 아무것도 존재하지 않을때의 id 값에 대한 로직 추가
+            let postId; // id 값 변수 만들기
+            if (posts.length === 0) { // ! posts 배열에 아무것도 존재하지 않는다면
+              postId = 1; // id 를 1로 새롭게 부여하기
+            } else {
+              postId = posts[posts.length - 1].id + 1; // 아니라면 맨 마지막 값의 id 에 +1 하기
+            }
             // 새로운 게시글에 대한 정보를 newPost 변수에 객체로 추가
             const newPost = {
-              id: posts[posts.length - 1].id + 1,
+              id: postId,
               name: postData.name,
               content: postData.content
             };

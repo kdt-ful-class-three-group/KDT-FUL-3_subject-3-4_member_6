@@ -149,7 +149,37 @@ const server = http.createServer(function(request, response) {
           }
         });
       });
-    // ! 잘못 접근했다면 404 에러 페이지 표기하기
+    // ? 포스트 삭제하기를 눌렀다면
+    } else if (request.url === `/delete?${parsedUrl[1]}`) {
+      let body = ""; // 요청 데이터를 문자열로 정리하기 위한 임시 변수
+      // * 요청 데이터를 불러와 임시 변수 body에 저장하기
+      request.on("data", function (chunk) {
+        body = body + chunk;
+      });
+      request.on("end", function () {
+        const deleteData = qs.parse(body);
+        loadFromJSON(function (error, posts) {
+          if (error === true) {
+            response.writeHead(500, CONTENT_TYPE.HTML);
+            response.end(errorPage);
+          } else {
+            // 삭제할 정보의 인덱스를 deleteIndex 변수에 담기
+            const deleteIndex = Number(deleteData.id) - 1;
+            posts.splice(deleteIndex, 1) // 원본 배열인 게시글들 목록에서 해당된 게시글 삭제
+            // * 수정된 게시글 배열을 JSON 파일에도 수정하기
+            saveToJSON(posts, function (saveError) {
+              if (saveError === true) {
+                response.writeHead(500, CONTENT_TYPE.HTML);
+                response.end(errorPage);
+              } else {
+                response.writeHead(302, { location: "/list" });
+                response.end();
+              }
+            })
+          }
+        });
+      });
+    // ! 잘못 접근했다면 404 에러 페이지 표기하기  
     } else {
       response.writeHead(404, CONTENT_TYPE.HTML); // 잘못 접근하였을 경우
       response.end(errorPage); // 페이지에 Not found 표기하기

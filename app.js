@@ -13,6 +13,8 @@ import saveToJSON from './src/utils/saveToJson.js';
 import listPosts from './src/functions/list.js';
 import selectPosts from './src/functions/post.js';
 import writePost from './src/functions/write.js';
+// 데이터 유효성 검사하는 로직 불러오기
+import dataCheck from './src/utils/dataCheck.js';
 
 // * 서버 생성하기
 const server = http.createServer(function(request, response) {
@@ -40,18 +42,20 @@ const server = http.createServer(function(request, response) {
       });
     // ? 글 상세 페이지라면
     } else if (pathName === "/post") {
+      let blankMsg = "";
       response.writeHead(200, CONTENT_TYPE.HTML);
       loadFromJSON(function (error, posts) {
         if (error === true) {
           response.end(errorPage);
         } else {
-          let postPage = selectPosts(posts, parsedUrl[1]); // post(상세보기) 페이지 읽어오기
+          let postPage = selectPosts(posts, parsedUrl[1], blankMsg); // post(상세보기) 페이지 읽어오기
           response.end(postPage);
         }
       });
     // ? 글 작성 페이지라면
     } else if (pathName === "/write") {
-      let writePage = writePost();
+      let blankMsg = "";
+      let writePage = writePost(blankMsg);
       response.writeHead(200, CONTENT_TYPE.HTML);
       response.end(writePage);
     // ? common.css 불러오기
@@ -94,7 +98,16 @@ const server = http.createServer(function(request, response) {
               name: postData.name,
               content: postData.content
             };
-            posts.push(newPost); // 원본 배열인 게시글들 목록에 새로운 게시글 내용 추가
+            // * 데이터 유효성 검사하기
+            let errorMsg = "";
+            let updateFlg = false;
+            errorMsg = dataCheck(posts, newPost, updateFlg);
+            if (errorMsg !== "") {
+              let writePage = writePost(errorMsg);
+              return response.end(writePage);
+            } else {
+              posts.push(newPost); // 원본 배열인 게시글들 목록에 새로운 게시글 내용 추가
+            }
             // * 새로운 게시글을 JSON 파일에도 추가하기
             saveToJSON(posts, function (saveError) {
               // ! 에러라면 500 서버 문제 발생 에러 페이지 표기하기
@@ -136,12 +149,21 @@ const server = http.createServer(function(request, response) {
              * TODO. 2025-02-25 <데이터 로직 변경>
              * TODO. updatePost.id - 1 이 아닌, 해당 데이터의 index를 활용하기위해 forEach() 사용하기
              */
-            posts.forEach((list, index) => {
-              if (list.id == updatePost.id) {
-                posts.splice(index, 1, updatePost); // 원본 배열인 게시글들 목록에 수정할 게시글 넣기
-                return;
-              }
-            });
+            // * 데이터 유효성 검사하기
+            let errorMsg = "";
+            let updateFlg = true; // 수정하기 부분이기 때문에 true 지정하기
+            errorMsg = dataCheck(posts, updatePost, updateFlg);
+            if (errorMsg !== "") {
+              let postPage = selectPosts(posts, parsedUrl[1], errorMsg);
+              return response.end(postPage);
+            } else {
+              posts.forEach((list, index) => {
+                if (list.id == updatePost.id) {
+                  posts.splice(index, 1, updatePost); // 원본 배열인 게시글들 목록에 수정할 게시글 넣기
+                  return;
+                }
+              });
+            }
             // * 수정된 게시글 배열을 JSON 파일에도 수정하기
             saveToJSON(posts, function (saveError) {
               // ! 에러라면 500 서버 문제 발생 에러 페이지 표기하기

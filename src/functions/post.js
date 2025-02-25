@@ -1,5 +1,5 @@
 // * 포스트 상세보기 가져오는 함수
-function selectPosts(data, parsedUrl) {
+function selectPosts(data, parsedUrl, dataCheckMsg) {
   let inputId = parsedUrl.charAt(parsedUrl.length - 1); // id값 뽑아내기
   /**
    * TODO. 2025-02-25 <데이터 로직 변경>
@@ -27,6 +27,7 @@ function selectPosts(data, parsedUrl) {
       <br>
       <span>내용 : </span>
       <input type="text" name="content" value="${selectedPost.content}" placeholder="내용을 입력하세요.">
+      <p class="color-red">${dataCheckMsg}</p>
       <br>
       <div id="btn-set" class="text-center pd-1">
         <button type="submit" formaction="/post?id=${inputId}">수정하기</button>

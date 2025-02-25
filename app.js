@@ -14,6 +14,7 @@ import saveToJSON from './src/functions/saveToJson.js';
 // 모듈 JS 파일들 불러오기
 import listPosts from './src/functions/list.js';
 import selectPosts from './src/functions/post.js';
+import writePost from './src/functions/write.js';
 
 
 // * 서버 생성하기
@@ -59,7 +60,8 @@ const server = http.createServer(function(request, response) {
       });
     // ? 글 작성 페이지라면
     } else if (pathName === "/write") {
-      const writePage = fs.readFileSync('./views/write.html', 'utf-8'); // write 페이지 읽어오기
+      // const writePage = fs.readFileSync('./views/write.html', 'utf-8'); // write 페이지 읽어오기
+      let writePage = writePost();
       response.writeHead(200, CONTENT_TYPE.HTML);
       response.end(writePage);
     } else if (pathName === "/public/css/common.css") {

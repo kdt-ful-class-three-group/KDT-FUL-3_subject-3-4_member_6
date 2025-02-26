@@ -3,7 +3,11 @@ import fs from 'fs';
 // 경로제어를 위해 path 모듈 불러오기
 import path from 'path';
 
-// * posts 관리하기 위해 JSON 파일로 저장해주는 로직 만들기
+/**
+ * @description posts 관리하기 위해 JSON 파일로 저장해주는 로직 만들기
+ * @param {*} data posts 데이터
+ * @param {*} callback 콜백 함수
+ */
 function saveToJSON(data, callback) {
   /**
    * TODO. 지식 정리하기
@@ -25,9 +29,9 @@ function saveToJSON(data, callback) {
   // ? ex: 아래의 경우 공백 문자 두 개를 사용하여 들여쓰기 한다는 의미
   fs.writeFile(filePath, JSON.stringify(data, null, 2), "utf8", function (error) {
     if (error) {
-      callback(error);
+      callback(error); // 에러가 발생했다면 error 를 전달
     } else {
-      callback(null);
+      callback(null); // 에러가 null일 경우는 정상적으로 저장된 경우
     }
   });
 }

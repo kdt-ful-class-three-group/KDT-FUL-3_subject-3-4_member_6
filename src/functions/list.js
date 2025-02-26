@@ -15,21 +15,23 @@ function listPosts(data) {
   <title>📚게시글 목록 페이지</title>
 </head>
 <body>
-  <header class="display-flex justify-center">
-    <h1>📚게시글 목록</h1>
-  </header>
-  <article>
-    <div id="btn-set" class="text-center pd-1">
-      <button type="button" onclick="location.href = '/write'">글쓰기</button>
-      <button type="button" onclick="location.href = '/'">홈으로</button>
-    </div>
-    <div id="list-content" class="display-flex justify-center">
-    ${html}
-    </div>
-  </article>
-  <footer class="display-flex justify-center font-small">
-    <span>ⓒ made by eunbyul.ahn</span>
-  </footer>
+  <div id="root">
+    <header class="display-flex justify-center">
+      <h1>📚게시글 목록</h1>
+    </header>
+    <article>
+      <div id="btn-set" class="text-center pd-1">
+        <button type="button" onclick="location.href = '/write'">글쓰기</button>
+        <button type="button" onclick="location.href = '/'">홈으로</button>
+      </div>
+      <div id="list-content" class="display-flex justify-center">
+      ${html}
+      </div>
+    </article>
+    <footer class="display-flex justify-center font-small">
+      <span>ⓒ made by eunbyul.ahn</span>
+    </footer>
+  </div>
 </body>
 </html>`;
   return htmlPage;

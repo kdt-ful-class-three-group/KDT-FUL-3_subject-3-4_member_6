@@ -10,6 +10,9 @@ html, body {
 }
 body {
   padding: 5vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* *css 유틸리티 클래스 정의하기 */

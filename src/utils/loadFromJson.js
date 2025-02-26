@@ -7,6 +7,10 @@ import saveToJSON from './saveToJson.js';
 // 게시글 데이터 불러오기
 import posts from '../storage/postsData.js';
 
+/**
+ * @description JSON 파일을 불러오는 함수
+ * @param {*} callback 콜백 함수
+ */
 function loadFromJSON(callback) {
   const __dirname = path.resolve();
   const filePath = path.join(__dirname, "posts.json");
